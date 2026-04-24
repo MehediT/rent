@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -37,6 +39,14 @@ jobs:
         run: |
           cd ./MyService
           ./gradlew jacocoTestReport
+
+      - name: Build and analyze with SonarCloud
+        if: env.SONAR_TOKEN != ''
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd ./MyService
+          ./gradlew sonar
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
